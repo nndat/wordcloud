@@ -1,7 +1,10 @@
 # task running
 from wordcloud import WordCloud
-from crawler import Crawler
 from datetime import datetime
+
+from crawler import Crawler
+from db import get_session
+from db.models import WordCloud as WCModel
 
 
 def to_wordcloud(text, filepath):
@@ -13,8 +16,11 @@ def to_stogare(filepath):
     pass
 
 
-def to_db(filepath, label):
-    pass
+def to_db(filepath, label, content):
+    session = get_session()
+    wc = WCModel(file_path=filepath, label=label, content=content)
+    session.add(wc)
+    session.commit()
 
 
 def _get_filepath(label, ext="png"):
@@ -23,14 +29,16 @@ def _get_filepath(label, ext="png"):
     return f"stogare/{label}_{time_str}.{ext}"
 
 
-if __name__ == "__main__":
-    # text = newpapers.get_trending_text()
-    # text = "new new 123 zo 242"
-    # to_wordcloud(text)
+def crawle():
     crawler = Crawler()
     for trend in crawler.get_trending_text():
         label = trend['label']
         text = trend['text']
         filepath = _get_filepath(label)
         to_wordcloud(text, filepath)
+        to_db(filepath, label, text)
         print(label)
+
+
+if __name__ == "__main__":
+    crawle()

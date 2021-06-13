@@ -2,7 +2,7 @@ from .newpapers import NewsCrawler, TuoiTreNews, ThanhNienNews
 
 
 class Crawler:
-    crawlers = [ThanhNienNews]
+    crawlers = [ThanhNienNews, TuoiTreNews]
 
     def get_trending_text(self):
         for crawler in self.crawlers:
